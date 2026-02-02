@@ -1,17 +1,17 @@
-name: Crear Issues y Subissues desde JSON/Markdown
+name: Crear Labels e Issues desde JSON/Markdown
 
 on:
   workflow_dispatch:
 
 jobs:
-  create-issues:
+  create-labels-and-issues:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout del repo
+      - name: Checkout del repositorio
         uses: actions/checkout@v3
 
-      - name: Crear Issues desde JSON/Markdown
+      - name: Crear Labels e Issues
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -19,12 +19,27 @@ jobs:
           node -e '
             const fs = require("fs");
             const { execSync } = require("child_process");
-            const issues = JSON.parse(fs.readFileSync("issues-template.json", "utf-8"));
 
+            // Leer el JSON con etiquetas e issues
+            const data = JSON.parse(fs.readFileSync("issues-template.json", "utf-8"));
+
+            // Crear Labels en el repositorio
+            console.log("Creando etiquetas...");
+            data.labels.forEach(label => {
+              console.log(`Creando etiqueta: ${label.name}`);
+              execSync(
+                `gh label create "${label.name}" --description "${label.description}" --color "${label.color}"`,
+                { stdio: "inherit" }
+              );
+            });
+
+            // Función para leer contenido Markdown
             function readMarkdown(filePath) {
               return fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf-8") : "";
             }
 
+            // Crear Issues y Subissues
+            console.log("Creando issues...");
             function createIssue(issue) {
               const body = issue.bodyFile ? readMarkdown(issue.bodyFile) : (issue.body || "");
               console.log(`Creando issue: ${issue.title}`);
@@ -35,13 +50,13 @@ jobs:
               return issueUrl;
             }
 
-            for (const issue of issues) {
+            data.issues.forEach(issue => {
               const issueUrl = createIssue(issue);
               if (issue.subissues) {
-                for (const subissue of issue.subissues) {
+                issue.subissues.forEach(subissue => {
                   subissue.body = `Subtarea de: ${issueUrl}\n\n` + (subissue.bodyFile ? readMarkdown(subissue.bodyFile) : (subissue.body || ""));
                   createIssue(subissue);
-                }
+                });
               }
-            }
+            });
           '

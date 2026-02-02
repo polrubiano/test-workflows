@@ -1,28 +1,47 @@
-[
-  {
-    "title": "Configurar el entorno de desarrollo",
-    "bodyFile": "ISSUE_TEMPLATE/feature.md",
-    "labels": ["feature"],
-    "assignees": ["polrubiano"]
-  },
-  {
-    "title": "Implementar la página principal",
-    "bodyFile": "ISSUE_TEMPLATE/task.md",
-    "labels": ["task"],
-    "assignees": ["polrubiano"],
-    "subissues": [
-      {
-        "title": "Estilo CSS básico",
-        "bodyFile": "ISSUE_TEMPLATE/task.md",
-        "labels": ["task"],
-        "assignees": ["polrubiano"]
-      },
-      {
-        "title": "Agregar interactividad",
-        "bodyFile": "ISSUE_TEMPLATE/task.md",
-        "labels": ["task"],
-        "assignees": ["polrubiano"]
-      }
-    ]
-  }
-]
+{
+  "labels": [
+    {
+      "name": "feature",
+      "description": "Configurar herramientas y dependencias iniciales",
+      "color": "#0052cc"
+    },
+    {
+      "name": "task",
+      "description": "Tareas de desarrollo en curso",
+      "color": "#0e8a16"
+    },
+    {
+      "name": "pull request",
+      "description": "Tareas relacionadas con la interfaz de usuario",
+      "color": "#5319e7"
+    }
+  ],
+  "issues": [
+    {
+      "title": "Configurar el entorno de desarrollo",
+      "bodyFile": "ISSUE_TEMPLATE/feature.md",
+      "labels": ["feature"],
+      "assignees": ["polrubiano"]
+    },
+    {
+      "title": "Implementar la página principal",
+      "bodyFile": "ISSUE_TEMPLATE/task.md",
+      "labels": ["task"],
+      "assignees": ["polrubiano"],
+      "subissues": [
+        {
+          "title": "Estilo CSS básico",
+          "bodyFile": "ISSUE_TEMPLATE/task.md",
+          "labels": ["task"],
+          "assignees": ["polrubiano"]
+        },
+        {
+          "title": "Agregar interactividad",
+          "bodyFile": "ISSUE_TEMPLATE/task.md",
+          "labels": ["task"],
+          "assignees": ["polrubiano"]
+        }
+      ]
+    }
+  ]
+}
