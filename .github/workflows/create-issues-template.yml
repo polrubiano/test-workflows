@@ -1,0 +1,47 @@
+name: Crear Issues y Subissues desde JSON/Markdown
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repo
+        uses: actions/checkout@v3
+
+      - name: Crear Issues desde JSON/Markdown
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Leyendo el archivo JSON..."
+          node -e '
+            const fs = require("fs");
+            const { execSync } = require("child_process");
+            const issues = JSON.parse(fs.readFileSync("issues-template.json", "utf-8"));
+
+            function readMarkdown(filePath) {
+              return fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf-8") : "";
+            }
+
+            function createIssue(issue) {
+              const body = issue.bodyFile ? readMarkdown(issue.bodyFile) : (issue.body || "");
+              console.log(`Creando issue: ${issue.title}`);
+              const issueUrl = execSync(
+                `gh issue create --title "${issue.title}" --body "${body}" ${issue.labels ? "--label " + issue.labels.join(",") : ""} ${issue.assignees ? "--assignee " + issue.assignees.join(",") : ""}`,
+                { encoding: "utf-8" }
+              ).trim();
+              return issueUrl;
+            }
+
+            for (const issue of issues) {
+              const issueUrl = createIssue(issue);
+              if (issue.subissues) {
+                for (const subissue of issue.subissues) {
+                  subissue.body = `Subtarea de: ${issueUrl}\n\n` + (subissue.bodyFile ? readMarkdown(subissue.bodyFile) : (subissue.body || ""));
+                  createIssue(subissue);
+                }
+              }
+            }
+          '
