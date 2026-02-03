@@ -18,26 +18,22 @@
   ],
   "issues": [
     {
-      "title": "Configurar el entorno de desarrollo",
-      "bodyFile": "ISSUE_TEMPLATE/feature.md",
-      "labels": ["feature"],
-      "assignees": ["polrubiano"]
-    },
-    {
-      "title": "Implementar la página principal",
-      "bodyFile": "ISSUE_TEMPLATE/task.md",
-      "labels": ["task"],
-      "assignees": ["polrubiano"],
+      "title": "Parent Feature",
       "subissues": [
         {
-          "title": "Estilo CSS básico",
-          "bodyFile": "ISSUE_TEMPLATE/task.md",
-          "labels": ["task"],
-          "assignees": ["polrubiano"]
+          "title": "Task 1",
+          "assignees": ["polrubiano"],
+          "subissues": [
+            { "title": "Subtask 1-1",
+              "assignees": ["polrubiano"]
+            },
+            { "title": "Subtask 1-2",
+              "assignees": ["polrubiano"]
+            }
+          ]
         },
         {
           "title": "Agregar interactividad",
-          "bodyFile": "ISSUE_TEMPLATE/task.md",
           "labels": ["task"],
           "assignees": ["polrubiano"]
         }

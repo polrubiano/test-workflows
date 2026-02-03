@@ -1,9 +1,9 @@
 ---
 name: "Feature"
 about: "Feature to be implemented"
-title: "Feature - Feature title"
+title: "Feature - {{TITLE}}"
 labels: ["feature"]
-assignees: ["polrubiano"]
+assignees: ["{{ASSIGNEES}}"]
 ---
 ## Objective
 - [What]
@@ -12,10 +12,8 @@ assignees: ["polrubiano"]
 - [How]
 - [Why]
 
-## Checklist 
-- [ ] **#ID_task**
-- [ ] **#ID_task**
-- [ ] **#ID_task**
+## Checklist
+{{TASKS}}
 
 ## References
 - {{PARENT}}

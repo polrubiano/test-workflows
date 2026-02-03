@@ -1,9 +1,9 @@
 ---
 name: "Task"
 about: "Task to be implemented"
-title: "Task - Task title"
+title: "Task - {{TITLE}}"
 labels: ["task"]
-assignees: ["polrubiano"]
+assignees: ["{{ASSIGNEES}}"]
 ---
 ## Technical Requirements
 - [ ] ...

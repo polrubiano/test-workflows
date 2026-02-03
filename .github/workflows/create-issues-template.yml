@@ -15,48 +15,79 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Leyendo el archivo JSON..."
           node -e '
-            const fs = require("fs");
-            const { execSync } = require("child_process");
-
-            // Leer el JSON con etiquetas e issues
-            const data = JSON.parse(fs.readFileSync(".github/issues-template.json", "utf-8"));
-
-            // Crear Labels en el repositorio
-            console.log("Creando etiquetas...");
-            data.labels.forEach(label => {
-              console.log(`Creando etiqueta: ${label.name}`);
-              execSync(
-                `gh label create "${label.name}" --description "${label.description}" --color "${label.color}"`,
-                { stdio: "inherit" }
-              );
+          const fs = require("fs");
+          const { execSync } = require("child_process");
+        
+          let issueMap = new Map();
+        
+          function readAndProcessTemplate(templatePath, placeholders) {
+            let template = fs.readFileSync(templatePath, "utf-8");
+            Object.keys(placeholders).forEach(key => {
+              const regex = new RegExp(`{{${key}}}`, "g");
+              template = template.replace(regex, placeholders[key]);
             });
+            return template;
+          }
+        
+          function createIssue(issue, parentId = "") {
+            const templateType = issue.labels && issue.labels.includes("feature") ? "feature" : "task";
+            const templatePath = `.github/ISSUE_TEMPLATE/${templateType}.md`;
+          
+            const placeholders = {
+              TITLE: issue.title,
+              ASSIGNEES: issue.assignees ? issue.assignees.join(", ") : "",
+              PARENT: parentId ? `- ${parentId}` : "",
+              TASKS: issue.subissues ? issue.subissues.map(sub => `- ${sub.title}`).join("\n") : ""
+            };
+        
+            const body = readAndProcessTemplate(templatePath, placeholders);
+          
+            const issueUrl = execSync(
+              `gh issue create --title "${issue.title}" --body "${body}" ${issue.labels ? "--label " + issue.labels.join(",") : ""} ${issue.assignees ? "--assignee " + issue.assignees.join(",") : ""}`,
+              { encoding: "utf-8" }
+            ).trim();
+          
+            issueMap.set(issue.title, issueUrl);
+            return issueUrl;
+          }
 
-            // Función para leer contenido Markdown
-            function readMarkdown(filePath) {
-              return fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf-8") : "";
-            }
-
-            // Crear Issues y Subissues
-            console.log("Creando issues...");
-            function createIssue(issue) {
-              const body = issue.bodyFile ? readMarkdown(issue.bodyFile) : (issue.body || "");
-              console.log(`Creando issue: ${issue.title}`);
-              const issueUrl = execSync(
-                `gh issue create --title "${issue.title}" --body "${body}" ${issue.labels ? "--label " + issue.labels.join(",") : ""} ${issue.assignees ? "--assignee " + issue.assignees.join(",") : ""}`,
-                { encoding: "utf-8" }
-              ).trim();
-              return issueUrl;
-            }
-
-            data.issues.forEach(issue => {
-              const issueUrl = createIssue(issue);
+          function processIssues(issues, parentId = "") {
+            for (const issue of issues) {
+              const issueUrl = createIssue(issue, parentId);
               if (issue.subissues) {
-                issue.subissues.forEach(subissue => {
-                  subissue.body = `Subtarea de: ${issueUrl}\n\n` + (subissue.bodyFile ? readMarkdown(subissue.bodyFile) : (subissue.body || ""));
-                  createIssue(subissue);
-                });
+                processIssues(issue.subissues, issueUrl);
+              }
+            }
+          }
+        
+          function createReferences(subissuesTitles) {
+            return subissuesTitles
+              .map(title => `- ${issueMap.get(title)}`)
+              .join("\n");
+          }
+        
+          function processParentIssues(issues) {
+            issues.forEach(parent => {
+              if (parent.subissues) {
+                const references = createReferences(parent.subissues.map(sub => sub.title));
+                const newBody = parent.body + `\n\n## References\n${references}`;
+                execSync(
+                  `gh issue edit ${issueMap.get(parent.title)} --body "${newBody}"`,
+                  { encoding: "utf-8" }
+                );
               }
             });
-          '
+          }
+          
+          const data = JSON.parse(fs.readFileSync("issues-template.json", "utf-8"));
+          
+          data.labels.forEach(label => {
+            execSync(
+              `gh label create "${label.name}" --description "${label.description}" --color "${label.color}"`,
+              { stdio: "inherit" }
+            );
+          });
+          
+          processIssues(data.issues);
+          processParentIssues(data.issues);
