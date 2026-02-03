@@ -18,17 +18,17 @@
   ],
   "issues": [
     {
-      "title": "Parent Feature",
+      "title": "Feature parent",
       "subissues": [
         {
-          "title": "Task 1",
+          "title": "Feature child",
           "subissues": [
-            { "title": "Subtask 1-1" },
-            { "title": "Subtask 1-2" }
+            { "title": "Task child1" },
+            { "title": "Task child2" }
           ]
         },
         {
-          "title": "Agregar interactividad",
+          "title": "Task",
           "labels": ["task"]
         }
       ]
