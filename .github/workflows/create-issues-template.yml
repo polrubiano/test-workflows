@@ -17,7 +17,7 @@ jobs:
         run: |
           node -e '
             const fs = require("fs");
-              const { execSync } = require("task_process");
+              const { execSync } = require("child_process");
               
               // Leer el archivo JSON con las etiquetas y las *issues*
               const data = JSON.parse(fs.readFileSync(".github/issues-template.json", "utf-8"));
