@@ -17,7 +17,7 @@ jobs:
         run: |
           node -e '
             const fs = require("fs");
-              const { execSync } = require("child_process");
+              const { execSync } = require("task_process");
               
               // Leer el archivo JSON con las etiquetas y las *issues*
               const data = JSON.parse(fs.readFileSync(".github/issues-template.json", "utf-8"));
@@ -43,9 +43,9 @@ jobs:
               
               // Crear una issue en GitHub
               function createIssue(issue, parentId = "") {
-              // Determinar si la issue es una "feature" o un "child"
+              // Determinar si la issue es una "feature" o un "task"
               const isFeature = issue.subissues && issue.subissues.length > 0;
-            const templateType = isFeature ? "feature" : "child";
+            const templateType = isFeature ? "feature" : "task";
               const templatePath = `.github/ISSUE_TEMPLATE/${templateType}.md`;
             
               // Etiquetas predeterminadas
@@ -53,8 +53,8 @@ jobs:
               if (isFeature && !labels.includes("feature")) {
               labels.push("feature");
             }
-              if (!isFeature && !labels.includes("child")) {
-              labels.push("child");
+              if (!isFeature && !labels.includes("task")) {
+              labels.push("task");
             }
             
               // Generar el cuerpo de la issue usando la plantilla
