@@ -84,7 +84,7 @@ jobs:
             
             data.labels.forEach(label => {
               execSync(
-                `gh label create "${label.name}" --description "${label.description}" --color "${label.color}"`,
+                `gh label create "${label.name}" --description "${label.description}" --color "${label.color}" --force`,
                 { stdio: "inherit" }
               );
             });
