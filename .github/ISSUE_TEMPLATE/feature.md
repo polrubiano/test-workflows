@@ -1,10 +1,5 @@
----
-name: "Feature"
-about: "Feature to be implemented"
-title: "Feature - {{TITLE}}"
-labels: ["feature"]
-assignees: ["{{ASSIGNEES}}"]
----
+## {{TITLE}}
+
 ## Objective
 - [What]
 - [Who]

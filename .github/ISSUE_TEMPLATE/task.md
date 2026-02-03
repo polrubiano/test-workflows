@@ -1,10 +1,5 @@
----
-name: "Task"
-about: "Task to be implemented"
-title: "Task - {{TITLE}}"
-labels: ["task"]
-assignees: ["{{ASSIGNEES}}"]
----
+## {{TITLE}}
+
 ## Technical Requirements
 - [ ] ...
 - [ ] Unit test implementation.

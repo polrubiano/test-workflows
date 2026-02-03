@@ -36,7 +36,6 @@ jobs:
             
               const placeholders = {
                 TITLE: issue.title,
-                ASSIGNEES: issue.assignees ? issue.assignees.join(", ") : "",
                 PARENT: parentId ? `- ${parentId}` : "",
                 TASKS: issue.subissues ? issue.subissues.map(sub => `- ${sub.title}`).join("\n") : ""
               };
